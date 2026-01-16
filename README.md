@@ -95,3 +95,7 @@ For the production environment, the database was migrated to a hosted solution u
 I updated .env file accordingly with the new connection details. After updating config.cjs, migrations and seeders for prod were run to create the tables and populate the database with data.
 
 The backend was then started locally to verify that the connection to the hosted database was successfully established. Once confirmed I deployed backend to Render as a web service.
+
+**Live demo:**  
+[https://cxntury-backend-8o99.onrender.com](https://cxntury-backend-8o99.onrender.com)
+
