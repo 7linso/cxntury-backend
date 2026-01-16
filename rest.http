@@ -1,0 +1,48 @@
+@baseUrl = http://localhost:4000
+@token = e45ab7cb-c36f-48c3-8f15-3dd7b6dcc0bc
+@taskId = 02e5fa40-1321-4130-9f86-19f4f56aaee8
+@optionId = d6fd7eb9-61a4-4dae-a28f-135c4bba3f58
+
+###  Health check
+GET {{baseUrl}}/health
+
+### GET session token
+GET {{baseUrl}}/api/session
+
+### GET tasks with options
+GET {{baseUrl}}/api/worksheet/tasks
+
+### POST answer (update taskId, optionId,  token)
+POST {{baseUrl}}/api/worksheet/tasks/{{taskId}}/answer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "optionId": "{{optionId}}"
+}
+
+### Missing token check
+POST {{baseUrl}}/api/worksheet/tasks/{{taskId}}/answer
+Content-Type: application/json
+
+{
+  "optionId": "{{optionId}}"
+}
+
+### Invalid token check
+POST {{baseUrl}}/api/worksheet/tasks/{{taskId}}/answer
+Authorization: Bearer invalid-token
+Content-Type: application/json
+
+{
+  "optionId": "{{optionId}}"
+}
+
+### Option does not belong to task check
+POST {{baseUrl}}/api/worksheet/tasks/{{taskId}}/answer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "optionId": "00000000-0000-0000-0000-000000000000"
+}
