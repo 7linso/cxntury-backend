@@ -1,5 +1,4 @@
 import "dotenv/config";
-
 import fs from "fs";
 import path from "path";
 import Sequelize from "sequelize";
@@ -11,17 +10,26 @@ const basename = path.basename(__filename);
 
 const db = {};
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT || 3306),
-    dialect: "mysql",
-    logging: false,
-  }
-);
+const isProd = process.env.NODE_ENV === "production";
+
+const DB_NAME = isProd ? process.env.DB_NAME : process.env.DEV_DB_NAME;
+const DB_USER = isProd ? process.env.DB_USER : process.env.DEV_DB_USER;
+const DB_PASSWORD = isProd
+  ? process.env.DB_PASSWORD
+  : process.env.DEV_DB_PASSWORD;
+const DB_HOST = isProd ? process.env.DB_HOST : process.env.DEV_DB_HOST;
+const DB_PORT =
+  Number(isProd ? process.env.DB_PORT : process.env.DEV_DB_PORT) || 3306;
+
+const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
+  host: DB_HOST,
+  port: DB_PORT,
+  dialect: "mysql",
+  logging: false,
+  ...(isProd && process.env.DB_SSL === "1"
+    ? { dialectOptions: { ssl: { rejectUnauthorized: false } } }
+    : {}),
+});
 
 const files = fs
   .readdirSync(__dirname)
@@ -30,7 +38,7 @@ const files = fs
       file.indexOf(".") !== 0 &&
       file !== basename &&
       file.endsWith(".js") &&
-      !file.endsWith(".test.js")
+      !file.endsWith(".test.js"),
   );
 
 for (const file of files) {
